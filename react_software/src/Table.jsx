@@ -9,7 +9,7 @@ function Table() {
 
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 5;
+    const rowsPerPage = 3;
 
     const [ismodalOpen, setIsModalOpen] = useState(false);
     const [selectedSub, setSelectedSub] = useState({

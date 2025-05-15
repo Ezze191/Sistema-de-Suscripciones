@@ -18,6 +18,9 @@ function UpdateForm() {
 
     const handlesubmit = async (e) => {
         e.preventDefault();
+
+        
+
         try {
             const response = await axios.put('http://127.0.0.1:8000/api/updateall', updateform);
             if (response.status === 200) {

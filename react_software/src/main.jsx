@@ -5,12 +5,19 @@ import App from './App.jsx'
 import Table from './table.jsx'
 import Header from './Header.jsx'
 import UpdateForm from './updateform.jsx'
+import Addsub from './Addsub.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
     <Header />
+    <br />
+    <br />
+    <br />
     <UpdateForm />
+    <br />
+    <br />
+    <Addsub />
     <br />
     <Table />
   </StrictMode>,
