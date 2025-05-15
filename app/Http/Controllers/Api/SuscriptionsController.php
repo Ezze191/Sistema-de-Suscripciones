@@ -117,6 +117,20 @@ class SuscriptionsController extends Controller
 
        SuscriptionModel::query()->update($data);
 
+       $suscripciones = SuscriptionModel::all();
+
+       foreach ($suscripciones as $suscripcion) {
+        // Extrae solo los números del folio actual, por ejemplo "folio:7781" => 7781
+        $folioActual = intval(preg_replace('/\D/', '', $suscripcion->folio));
+
+        // Suma 1 al folio
+        $nuevoFolio = ($folioActual + 1);
+
+        // Actualiza el folio
+        $suscripcion->folio = $nuevoFolio;
+        $suscripcion->save();
+    }
+
         return response()->json([
             'message' => 'Suscripciones actualizadas correctamente'
         ]);

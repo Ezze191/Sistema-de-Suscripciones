@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 function UpdateForm() {
@@ -9,6 +9,8 @@ function UpdateForm() {
         vigencia: ''
     });
 
+    
+
     const handleChange = (e) => {
         setUpdateForm({
             ...updateform,
@@ -18,8 +20,6 @@ function UpdateForm() {
 
     const handlesubmit = async (e) => {
         e.preventDefault();
-
-        
 
         try {
             const response = await axios.put('http://127.0.0.1:8000/api/updateall', updateform);
@@ -35,7 +35,7 @@ function UpdateForm() {
     };
 
     return (
-        <form className="p-2 " onSubmit={handlesubmit} style={{position : 'absolute', top: '7rem'}}>
+        <form className="p-2 " onSubmit={handlesubmit} style={{ position: 'absolute', top: '7rem' }}>
             <div className="row g-2 align-items-center">
                 <div className="col-auto">
                     <label className="col-form-label col-form-label-sm">FECHA</label>
