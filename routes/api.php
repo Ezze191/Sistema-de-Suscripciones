@@ -27,3 +27,5 @@ Route::get('/suscriptions/{id}', [SuscriptionsController::class, 'show']);
 Route::delete('/delete/{id}', [SuscriptionsController::class, 'destroy']);
 
 Route::put('/update/{id}', [SuscriptionsController::class, 'update']);
+
+Route::put('/updateall' , [SuscriptionsController::class, 'updateAll']);

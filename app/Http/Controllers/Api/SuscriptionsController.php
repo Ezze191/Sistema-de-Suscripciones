@@ -97,4 +97,21 @@ class SuscriptionsController extends Controller
         ]);
     }
 
+    public function updateAll(Request $request){
+
+        $data = $request->validate([
+            'fecha' => 'required|date',
+            'rango1' => 'required|date',
+            'rango2' => 'required|date',
+            'vigencia' => 'required|date'
+        ]);
+
+       SuscriptionModel::query()->update($data);
+
+        return response()->json([
+            'message' => 'Suscripciones actualizadas correctamente'
+        ]);
+
+    }
+
 }

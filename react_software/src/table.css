@@ -1,0 +1,20 @@
+.loading{
+    text-align: center;
+    font-size: 5rem;
+}
+
+.lb-subs{
+    text-align: center;
+    
+}
+
+.toleft{
+    position: absolute;
+    right: 1rem;
+    top: 15rem;
+}
+
+.paginationleft{
+    position: absolute;
+    right: 1rem;
+}
