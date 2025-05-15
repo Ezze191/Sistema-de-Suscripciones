@@ -85,8 +85,17 @@ class SuscriptionsController extends Controller
 
         $data = $request->validate([
             'fecha' => 'required|date',
+            'nombre' => 'required|string|max:255',
+            'direccion' => 'required|string|max:255',
+            'colonia' => 'required|string|max:255',
+            'repartidor' => 'required|string|max:255',
+            'ruta' => 'required|string|max:255',
+            'cantidad' => 'required|integer',
+            'producto' => 'required|string|max:255',
             'rango1' => 'required|date',
             'rango2' => 'required|date',
+            'total' => 'required|numeric',
+            'folio' => 'required|string|max:255',
             'vigencia' => 'required|date'
         ]);
 

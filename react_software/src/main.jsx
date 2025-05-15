@@ -11,6 +11,7 @@ createRoot(document.getElementById('root')).render(
     <App />
     <Header />
     <UpdateForm />
+    <br />
     <Table />
   </StrictMode>,
 )
