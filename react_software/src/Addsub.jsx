@@ -66,7 +66,7 @@ function Addsub() {
 
 
     return <>
-        <button className="btn btn-sm btn-primary" style={{ backgroundColor: 'green', color: 'white', margin: '10px' }}
+        <button className="btn btn-sm btn-primary" style={{ backgroundColor: 'green', color: 'white', margin: '10px', position : 'absolute', top : '14rem' }}
             type='button'
             onClick={() => (handleOpenModal())}
         >Agregar

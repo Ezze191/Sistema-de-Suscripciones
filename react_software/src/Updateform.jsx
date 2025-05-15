@@ -35,7 +35,7 @@ function UpdateForm() {
     };
 
     return (
-        <form className="p-2" onSubmit={handlesubmit}>
+        <form className="p-2 " onSubmit={handlesubmit} style={{position : 'absolute', top: '7rem'}}>
             <div className="row g-2 align-items-center">
                 <div className="col-auto">
                     <label className="col-form-label col-form-label-sm">FECHA</label>

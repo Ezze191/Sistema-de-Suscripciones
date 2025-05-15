@@ -34,6 +34,22 @@ function Table() {
 
     const [mostrarTarjetas, setMostrarTarjetas] = useState(false);
 
+    const [pdfmodal, setPdfmodal] = useState(false);
+    const [pdfData, setPdfData] = useState([
+        {
+            leyenda: 'Cupon No Transferible',
+            mostrarvigencia: false
+        }
+    ]);
+
+    const openPdfModal = () => {
+        setPdfmodal(true);
+    }
+
+    const closePdfModal = () => {
+        setPdfmodal(false);
+    }
+
 
     const hanldeopenModal = (suscription) => {
         setSelectedSub(suscription);
@@ -160,6 +176,7 @@ function Table() {
 
         doc.save('suscripciones.pdf');
         setMostrarTarjetas(false); // Ocultar tarjetas de nuevo
+        setPdfmodal(false); // Cerrar modal
     };
 
 
@@ -231,7 +248,7 @@ function Table() {
                                             hanldeopenModal(suscription);
                                             setIsModalOpen(true);
                                         }}
-                                    >Actualizar</button>
+                                    >Editar</button>
                                 </td>
                             </tr>
                         ))}
@@ -242,14 +259,16 @@ function Table() {
                     onClick={ExportExcel}
                     style={{ marginLeft: '10px' }}
                 >
-                    Excel
+                    Exportar A EXCEL
                 </button>
                 <button
                     className="btn btn-sm btn-primary"
                     style={{ marginLeft: '10px' }}
-                    onClick={generarPDF}
+                    onClick={() => {
+                        openPdfModal();
+                    }}
                 >
-                    Pdf
+                    Exportar a PDF
                 </button>
                 <div style={{ marginTop: '10px' }} className='paginationleft'>
 
@@ -303,8 +322,9 @@ function Table() {
                                 </p>
                                 <p style={{ textAlign: 'center', marginBottom: '4px' }}>
                                     Avenida Allende S/N<br />
-                                    Tel. 749-11-00, ext 312-62 Vigencia: {suscription.vigencia} RUTA:{' '}
-                                    {suscription.ruta}<br />
+                                    Tel. 749-11-00, ext 312-62,
+                                    {pdfData[0].mostrarvigencia && ` Vigencia: ${suscription.vigencia}, `}
+                                    RUTA:{' '}{suscription.ruta}<br />
                                     Torreón, Coah, México. Domicilio: {suscription.direccion}
                                 </p>
                                 <p>
@@ -320,7 +340,7 @@ function Table() {
                                 </p>
                             </div>
                             <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
-                                Cupón No Transferible 
+                                {pdfData[0].leyenda}
                             </p>
                         </div>
                     ))}
@@ -464,6 +484,49 @@ function Table() {
                     </Button>
                     <Button variant="primary" onClick={handleUpdate}>
                         Guardar Cambios
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
+            {/* Modal para PDF */}
+            <Modal show={pdfmodal} onHide={closePdfModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>PDF PLANTILLA</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group>
+                            <Form.Label>Leyenda</Form.Label>
+                            <Form.Control
+                                name='leyenda'
+                                type='text'
+                                value={pdfData[0].leyenda}
+                                onChange={(e) => {
+                                    const newValue = e.target.value;
+                                    setPdfData(prev => [{ ...prev[0], leyenda: newValue }]);
+                                }}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="mostrarvigenciaCheckbox">
+                            <Form.Check
+                                type="checkbox"
+                                label="Mostrar vigencia"
+                                checked={pdfData[0].mostrarvigencia}
+                                onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    setPdfData(prev => [{ ...prev[0], mostrarvigencia: isChecked }]);
+                                }}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closePdfModal}>
+                        Cancelar
+                    </Button>
+                    <Button variant="primary" onClick={generarPDF}>
+                        Exportar PDF
                     </Button>
                 </Modal.Footer>
             </Modal>
