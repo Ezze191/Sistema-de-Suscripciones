@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Modal, Button, Form } from 'react-bootstrap';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 
 function Table() {
@@ -27,6 +31,8 @@ function Table() {
         folio: '',
         vigencia: ''
     });
+
+    const [mostrarTarjetas, setMostrarTarjetas] = useState(false);
 
 
     const hanldeopenModal = (suscription) => {
@@ -119,6 +125,42 @@ function Table() {
     };
 
 
+    //exportar a excel
+    const ExportExcel = () => {
+
+        const datosFiltrados = suscriptions.map(({ created_at, updated_at, ...rest }) => rest);
+
+        const ws = XLSX.utils.json_to_sheet(datosFiltrados);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Suscripciones');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(data, 'suscripciones.xlsx');
+    }
+
+
+    //generar PDF
+    const generarPDF = async () => {
+        setMostrarTarjetas(true); // Mostrar tarjetas
+        await new Promise(resolve => setTimeout(resolve, 100)); // Esperar a que se rendericen
+
+        const doc = new jsPDF();
+        const elements = document.querySelectorAll('.pdf-card');
+
+        for (let i = 0; i < elements.length; i++) {
+            const canvas = await html2canvas(elements[i]);
+            const imgData = canvas.toDataURL('image/png');
+
+            const yOffset = (i % 3) * 90; // Posición Y: 0, 90, 180
+
+            if (i > 0 && i % 3 === 0) doc.addPage(); // Nueva página cada 3 tarjetas
+
+            doc.addImage(imgData, 'PNG', 10, 10 + yOffset, 190, 80); // Ajusta altura y posición
+        }
+
+        doc.save('suscripciones.pdf');
+        setMostrarTarjetas(false); // Ocultar tarjetas de nuevo
+    };
 
 
 
@@ -195,7 +237,22 @@ function Table() {
                         ))}
                     </tbody>
                 </table>
+                <button
+                    className="btn btn-sm btn-primary"
+                    onClick={ExportExcel}
+                    style={{ marginLeft: '10px' }}
+                >
+                    Excel
+                </button>
+                <button
+                    className="btn btn-sm btn-primary"
+                    style={{ marginLeft: '10px' }}
+                    onClick={generarPDF}
+                >
+                    Pdf
+                </button>
                 <div style={{ marginTop: '10px' }} className='paginationleft'>
+
                     <button
                         className="btn btn-sm btn-primary"
                         onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -217,6 +274,61 @@ function Table() {
                     </button>
                 </div>
             </div>
+
+
+            {/* Generar PDF plantilla */}
+            {mostrarTarjetas && (
+                <div style={{ position: 'absolute', left: '-9999px' }}>
+                    {suscriptions.map((suscription, index) => (
+                        <div
+                            key={index}
+                            className="pdf-card"
+                            style={{
+                                width: '600px',
+                                height: '250px',
+                                padding: '10px',
+                                margin: '20px auto',
+                                border: '1px solid black',
+                                fontSize: '11px',
+                                background: 'white',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between'
+                            }}
+                        >
+                            <div>
+                                <p style={{ fontWeight: 'bold', textAlign: 'center' }}>
+                                    EDITORIAL LA OPINION, S.A. SUSCRIPCION POR SEMANA RECIBO:{' '}
+                                    {suscription.folio}
+                                </p>
+                                <p style={{ textAlign: 'center', marginBottom: '4px' }}>
+                                    Avenida Allende S/N<br />
+                                    Tel. 749-11-00, ext 312-62 Vigencia: {suscription.vigencia} RUTA:{' '}
+                                    {suscription.ruta}<br />
+                                    Torreón, Coah, México. Domicilio: {suscription.direccion}
+                                </p>
+                                <p>
+                                    <strong>Nombre:</strong> {suscription.nombre}<br />
+                                    <strong>Colonia y Cd.:</strong> {suscription.colonia}<br />
+                                    <strong>Repartidor:</strong> {suscription.repartidor}
+                                </p>
+                                <p>
+                                    <strong>CANTIDAD:</strong> {suscription.cantidad}{' '}
+                                    <strong>DESCRIPCION:</strong> {suscription.producto}{' '}
+                                    <strong>SEMANA:</strong> {suscription.rango1} - {suscription.rango2}{' '}
+                                    <strong>IMPORTE TOTAL:</strong> ${suscription.total}
+                                </p>
+                            </div>
+                            <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                                Cupón No Transferible 
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+
+            {/* Modal para actualizar */}
 
             <Modal show={ismodalOpen} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
@@ -269,7 +381,7 @@ function Table() {
                             />
                         </Form.Group>
 
-                         <Form.Group>
+                        <Form.Group>
                             <Form.Label>Ruta</Form.Label>
                             <Form.Control
                                 type="text"
@@ -314,7 +426,7 @@ function Table() {
                             />
                         </Form.Group>
 
-                         <Form.Group>
+                        <Form.Group>
                             <Form.Label>Total</Form.Label>
                             <Form.Control
                                 type="number"
@@ -343,7 +455,7 @@ function Table() {
 
 
 
-                       
+
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
