@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Suscription;
 use Illuminate\Http\Request;
 use App\Models\Suscription as SuscriptionModel;
+
 class SuscriptionsController extends Controller
 {
     //obtener todas las suscripciones

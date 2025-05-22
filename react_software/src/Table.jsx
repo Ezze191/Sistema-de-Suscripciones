@@ -61,18 +61,27 @@ function Table() {
 
 
 
-    //carga todas las suscripciones
+    const formatDate = (dateStr) => {
+        return new Date(dateStr).toISOString().split('T')[0]; // Devuelve solo la parte de la fecha
+    };
+
     useEffect(() => {
         axios.get('http://127.0.0.1:8000/api/suscriptions')
             .then(response => {
-                setSubscriptions(response.data);
+                const formattedData = response.data.map(suscription => ({
+                    ...suscription,
+                    fecha: formatDate(suscription.fecha),
+                    rango1: formatDate(suscription.rango1),
+                    rango2: formatDate(suscription.rango2),
+                    vigencia: formatDate(suscription.vigencia),
+                }));
+                setSubscriptions(formattedData);
                 setLoading(false);
             })
             .catch(error => {
                 console.error('Error al cargar los datos:', error);
                 setLoading(false);
             });
-
     }, []);
 
     //loader
@@ -231,7 +240,7 @@ function Table() {
                                 <td>{suscription.producto}</td>
                                 <td>{suscription.rango1}</td>
                                 <td>{suscription.rango2}</td>
-                                <td>{suscription.total}</td>
+                                <td>${suscription.total}.00</td>
                                 <td>{suscription.folio}</td>
                                 <td>{suscription.vigencia}</td>
                                 <td>
@@ -304,48 +313,88 @@ function Table() {
                             className="pdf-card"
                             style={{
                                 width: '600px',
-                                height: '250px',
-                                padding: '10px',
-                                margin: '20px auto',
-                                border: '1px solid black',
-                                fontSize: '11px',
+                                padding: '20px',
+                                margin: '40px auto',
+                                fontSize: '10px',
                                 background: 'white',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between'
+                                border: '1px solid #ccc',
+                                boxSizing: 'border-box'
                             }}
                         >
-                            <div>
-                                <p style={{ fontWeight: 'bold', textAlign: 'center' }}>
-                                    EDITORIAL LA OPINION, S.A. SUSCRIPCION POR SEMANA RECIBO:{' '}
-                                    {suscription.folio}
+                            {/* Título centrado arriba */}
+                            <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+                                <p style={{ fontWeight: 'bold', margin: 0 }}>
+                                    SUSCRIPCIÓN POR SEMANA
                                 </p>
-                                <p style={{ textAlign: 'center', marginBottom: '4px' }}>
-                                    Avenida Allende S/N<br />
-                                    Tel. 749-11-00, ext 312-62,
-                                    {pdfData[0].mostrarvigencia && ` Vigencia: ${suscription.vigencia}, `}
-                                    RUTA:{' '}{suscription.ruta}<br />
-                                    Torreón, Coah, México. Domicilio: {suscription.direccion}
-                                </p>
-                                <p>
-                                    <strong>Nombre:</strong> {suscription.nombre}<br />
-                                    <strong>Colonia y Cd.:</strong> {suscription.colonia}<br />
-                                    <strong>Repartidor:</strong> {suscription.repartidor}
-                                </p>
-                                <p>
-                                    <strong>CANTIDAD:</strong> {suscription.cantidad}{' '}
-                                    <strong>DESCRIPCION:</strong> {suscription.producto}{' '}
-                                    <strong>SEMANA:</strong> {suscription.rango1} - {suscription.rango2}{' '}
-                                    <strong>IMPORTE TOTAL:</strong> ${suscription.total}
-                                </p>
+                                {pdfData[0].mostrarvigencia && (
+                                    <p style={{ margin: 0 }}>
+                                        Vigencia: {suscription.vigencia}
+                                    </p>
+                                )}
                             </div>
-                            <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
+
+                            {/* Cabecera con dos columnas */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                {/* Izquierda: Editorial alineado con el título */}
+                                <div style={{ marginTop: '-40px' }}>
+                                    <p style={{ fontWeight: 'bold', margin: 0 }}>EDITORIAL LA OPINION, S.A.</p>
+                                    <p style={{ margin: 0 }}>Avenida Allende S/N</p>
+                                    <p style={{ margin: 0 }}>Tel. 749-11-00, ext 312-62</p>
+                                    <p style={{ margin: 0 }}>Torreón, Coah, México.</p>
+                                </div>
+
+                                {/* Derecha: Solo RECIBO alineado con el título */}
+                                <div style={{ textAlign: 'right', marginTop: '-40px' }}>
+                                    <p style={{ fontWeight: 'bold', margin: 0 }}>RECIBO: {suscription.folio}</p>
+                                </div>
+                            </div>
+
+                            
+                            <p style={{ marginTop: '10px', textAlign: 'right' }}>
+                                <strong>Repartidor:</strong> {suscription.repartidor}
+                                <p style={{ margin: 0 }}><strong>Ruta:</strong>{suscription.ruta}</p>
+                            </p>
+
+                            {/* Datos del cliente */}
+                            <p style={{ marginTop: '10px' }}>
+                                <strong>Nombre:</strong> {suscription.nombre}<br />
+                                <p style={{ margin: 0 }}><strong>Domicilio:</strong> {suscription.direccion}</p>
+                                <p style={{ margin: 0 }}><strong>Colonia y Cd.:</strong>{suscription.colonia}</p>
+
+                            </p>
+
+                            {/* Tabla */}
+                            <table className="table table-bordered" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead className="thead-light">
+                                    <tr>
+                                        <th style={{ border: '1px solid #000' }}>CANTIDAD</th>
+                                        <th style={{ border: '1px solid #000' }}>DESCRIPCIÓN</th>
+                                        <th style={{ border: '1px solid #000' }}>SEMANA</th>
+                                        <th style={{ border: '1px solid #000' }}>IMPORTE TOTAL</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style={{ border: '1px solid #000', textAlign: 'center' }}>{suscription.cantidad}</td>
+                                        <td style={{ border: '1px solid #000' }}>{suscription.producto}</td>
+                                        <td style={{ border: '1px solid #000' }}>{suscription.rango1} - {suscription.rango2}</td>
+                                        <td style={{ border: '1px solid #000' }}>${suscription.total}.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            {/* Leyenda final */}
+                            <p style={{ textAlign: 'center', fontWeight: 'bold', marginTop: '10px' }}>
                                 {pdfData[0].leyenda}
                             </p>
                         </div>
                     ))}
                 </div>
             )}
+
+
+
+
 
 
             {/* Modal para actualizar */}
