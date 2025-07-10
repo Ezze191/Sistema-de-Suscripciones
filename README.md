@@ -1,4 +1,6 @@
  Sistema de Gestión de Suscripciones
+
+ 
 Este sistema fue desarrollado con React en el frontend y Laravel 10 en el backend, mediante el consumo de APIs.
 
 Su propósito es gestionar eficientemente las suscripciones internas de Milenio, facilitando el control y permitiendo exportar cupones en formato PDF para un mejor seguimiento.
